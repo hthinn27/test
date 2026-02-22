@@ -87,7 +87,18 @@
   100% { transform: scale(1) rotate(0deg); opacity: 1; }
 }
 
+@keyframes sway {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+
+.animate-sway {
+  will-change: transform;
+  animation: sway 4s ease-in-out infinite;
+}
+
 .animate-badge-pop {
+  will-change: transform, opacity;
   animation: badge-pop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
@@ -103,11 +114,13 @@
 }
 
 .animate-grow {
+  will-change: transform, opacity;
   transform-origin: bottom;
   animation: grow-tree 1s ease-out forwards;
 }
 
 .animate-pollution {
+  will-change: transform, opacity;
   animation: spread-pollution 2s ease-out infinite;
 }
 
@@ -115,6 +128,7 @@
 .glass-panel {
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 }
@@ -124,6 +138,7 @@
 }
 
 .animate-pulse-slow {
+  will-change: opacity;
   animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
@@ -133,6 +148,7 @@
 }
 
 .animate-float {
+  will-change: transform;
   animation: float 3s ease-in-out infinite;
 }
 
@@ -142,6 +158,7 @@
 }
 
 .animate-fade-in {
+  will-change: opacity;
   animation: fade-in 0.8s ease-out forwards;
 }
 
@@ -151,6 +168,7 @@
 }
 
 .animate-slide-up {
+  will-change: transform, opacity;
   animation: slide-up 0.6s ease-out forwards;
 }
 
@@ -160,6 +178,7 @@
 }
 
 .animate-zoom-in {
+  will-change: transform, opacity;
   animation: zoom-in 0.5s ease-out forwards;
 }
 
@@ -182,10 +201,163 @@
   100% { transform: translateY(110vh) translateX(20vw) rotate(360deg); opacity: 0; }
 }
 
-.animate-bird-fly {
-  animation: bird-fly 15s linear infinite;
+@keyframes node-pulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4); }
+  50% { transform: scale(1.1); box-shadow: 0 0 20px 10px rgba(255, 255, 255, 0); }
 }
 
-.animate-leaf-fall {
-  animation: leaf-fall 10s linear infinite;
+@keyframes walk {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  25% { transform: translateY(-5px) rotate(-5deg); }
+  75% { transform: translateY(-5px) rotate(5deg); }
+}
+
+@keyframes breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes trail-glow {
+  0% { opacity: 0.8; transform: scale(1); }
+  100% { opacity: 0; transform: scale(2); }
+}
+
+.animate-node-pulse {
+  will-change: transform, box-shadow;
+  animation: node-pulse 2s infinite ease-in-out;
+}
+
+.animate-walk {
+  will-change: transform;
+  animation: walk 0.5s infinite ease-in-out;
+}
+
+.animate-breathe {
+  will-change: transform;
+  animation: breathe 3s infinite ease-in-out;
+}
+
+.path-line {
+  stroke-dasharray: 10;
+  animation: dash 20s linear infinite;
+}
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: -1000;
+  }
+}
+
+.node-glow-green {
+  box-shadow: 0 0 20px #10b981;
+}
+
+.node-glow-red {
+  box-shadow: 0 0 20px #ef4444;
+}
+
+/* Missing Animations from Round.tsx and AnimatedBackground.tsx */
+@keyframes tree-shake-fall {
+  0% { transform: rotate(0deg); }
+  20% { transform: rotate(5deg); }
+  40% { transform: rotate(-5deg); }
+  60% { transform: rotate(5deg); }
+  80% { transform: rotate(0deg); }
+  100% { transform: rotate(90deg) translateY(100px); opacity: 0; }
+}
+
+.animate-tree-shake-fall {
+  animation: tree-shake-fall 2s ease-in-out forwards;
+}
+
+@keyframes float-debris {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(10px, -10px) rotate(10deg); }
+  50% { transform: translate(-5px, 5px) rotate(-5deg); }
+  75% { transform: translate(5px, -5px) rotate(5deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+.animate-float-debris {
+  animation: float-debris 3s ease-in-out infinite;
+}
+
+@keyframes melt-ice {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(0.5) translateY(20px); opacity: 0; }
+}
+
+.animate-melt-ice {
+  animation: melt-ice 2s ease-in-out forwards;
+}
+
+@keyframes bee-fly-away {
+  0% { transform: translate(0, 0) scale(1); }
+  20% { transform: translate(-20px, -20px) scale(1.1); }
+  40% { transform: translate(20px, -40px) scale(0.9); }
+  60% { transform: translate(-10px, -60px) scale(1.1); }
+  80% { transform: translate(10px, -80px) scale(0.9); }
+  100% { transform: translate(0, -100px) scale(0); }
+}
+
+.animate-bee-fly-away {
+  animation: bee-fly-away 2s ease-in-out forwards;
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 20px);
+}
+
+/* Lightweight NPC Animations */
+@keyframes bounce-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 3s infinite ease-in-out;
+}
+
+@keyframes swim {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  25% { transform: translateX(2px) rotate(2deg); }
+  75% { transform: translateX(-2px) rotate(-2deg); }
+}
+
+.animate-swim {
+  animation: swim 4s infinite ease-in-out;
+}
+
+@keyframes fly-hover {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-3px) scale(1.05); }
+}
+
+.animate-fly-hover {
+  animation: fly-hover 2s infinite ease-in-out;
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+
+.animate-wiggle {
+  animation: wiggle 2s infinite ease-in-out;
 }

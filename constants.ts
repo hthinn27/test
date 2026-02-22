@@ -1,5 +1,53 @@
 
-import { Character, CharacterId } from './types';
+import { Character, CharacterId, PathNode } from './types';
+
+const FOREST_PATH: PathNode[] = [
+  { id: 0, x: 10, y: 80, type: 'normal', label: 'Start', next: [1] },
+  { id: 1, x: 25, y: 60, type: 'normal', label: 'The Glade', next: [2], funFact: 'Forests cover 31% of the global land area.', npc: '🦉', dialogue: 'Hoot! The trees are whispering secrets.' },
+  { id: 2, x: 40, y: 70, type: 'restoration', label: 'Hidden Spring', next: [3, 4] }, // Branching point
+  { id: 3, x: 55, y: 50, type: 'normal', label: 'Chainsaw Ridge', next: [5], npc: '🐿️', dialogue: 'I can\'t find my favorite oak tree!' },
+  { id: 4, x: 55, y: 80, type: 'disaster', label: 'Polluted Creek', next: [5] },
+  { id: 5, x: 70, y: 65, type: 'quiz', label: 'Ranger Station', next: [6], quiz: { question: 'What is the main cause of deforestation?', options: ['Agriculture', 'Urbanization', 'Mining', 'Wildfires'], correctIndex: 0, reward: 'Knowledge Badge' }, npc: '🦝', dialogue: 'Humans leave the strangest things behind.' },
+  { id: 6, x: 85, y: 40, type: 'normal', label: 'Industrial Edge', next: [7] },
+  { id: 7, x: 90, y: 20, type: 'knowledge', label: 'Eco-Center', next: [8], npc: '🦋', dialogue: 'The flowers here taste... different.' },
+  { id: 8, x: 50, y: 10, type: 'normal', label: 'Future Horizon', next: [] },
+];
+
+const OCEAN_PATH: PathNode[] = [
+  { id: 0, x: 5, y: 20, type: 'normal', label: 'Abyss', next: [1] },
+  { id: 1, x: 20, y: 35, type: 'normal', label: 'Coral Garden', next: [2], npc: '🐠', dialogue: 'Glub glub! The water is getting warm.' },
+  { id: 2, x: 35, y: 25, type: 'restoration', label: 'Clean Current', next: [3] },
+  { id: 3, x: 50, y: 45, type: 'normal', label: 'Plastic Gyre', next: [4], npc: '🐢', dialogue: 'That jellyfish looks... chewy and fake.' },
+  { id: 4, x: 65, y: 30, type: 'disaster', label: 'Oil Slick', next: [5] },
+  { id: 5, x: 80, y: 50, type: 'normal', label: 'Warming Reef', next: [6], npc: '🦀', dialogue: 'My shell feels softer lately.' },
+  { id: 6, x: 90, y: 70, type: 'knowledge', label: 'Marine Lab', next: [7] },
+  { id: 7, x: 75, y: 85, type: 'normal', label: 'Protected Area', next: [8], npc: '🐬', dialogue: 'Thanks for the clean water, friend!' },
+  { id: 8, x: 55, y: 90, type: 'normal', label: 'Deep Blue', next: [] },
+];
+
+const DESERT_PATH: PathNode[] = [
+  { id: 0, x: 10, y: 10, type: 'normal', label: 'Oasis', next: [1], npc: '🦎', dialogue: 'Sssss... the sun is fierce today.' },
+  { id: 1, x: 30, y: 20, type: 'normal', label: 'Dunes', next: [2] },
+  { id: 2, x: 50, y: 15, type: 'restoration', label: 'Water Hole', next: [3], npc: '🦅', dialogue: 'I see everything from up here.' },
+  { id: 3, x: 70, y: 30, type: 'normal', label: 'Dust Storm', next: [4] },
+  { id: 4, x: 85, y: 50, type: 'disaster', label: 'Drought', next: [5], npc: '🦂', dialogue: 'Dry as a bone. Just how I like it.' },
+  { id: 5, x: 70, y: 70, type: 'normal', label: 'Heat Wave', next: [6] },
+  { id: 6, x: 40, y: 80, type: 'knowledge', label: 'Nomad Camp', next: [7] },
+  { id: 7, x: 20, y: 70, type: 'normal', label: 'The Mirage', next: [8], npc: '🐍', dialogue: 'Is that water... or a trick?' },
+  { id: 8, x: 10, y: 50, type: 'normal', label: 'Sanctuary', next: [] },
+];
+
+const URBAN_PATH: PathNode[] = [
+  { id: 0, x: 10, y: 90, type: 'normal', label: 'Park', next: [1], npc: '🐦', dialogue: 'Coo! Got any crumbs?' },
+  { id: 1, x: 20, y: 70, type: 'normal', label: 'Suburbs', next: [2] },
+  { id: 2, x: 40, y: 80, type: 'restoration', label: 'Green Roof', next: [3], npc: '🐝', dialogue: 'So many flowers on top of the stone giants!' },
+  { id: 3, x: 60, y: 60, type: 'normal', label: 'Downtown', next: [4] },
+  { id: 4, x: 80, y: 70, type: 'disaster', label: 'Smog Zone', next: [5], npc: '🐀', dialogue: 'Cough... cough... too much smoke.' },
+  { id: 5, x: 90, y: 50, type: 'normal', label: 'Highway', next: [6] },
+  { id: 6, x: 70, y: 30, type: 'knowledge', label: 'Museum', next: [7] },
+  { id: 7, x: 40, y: 20, type: 'normal', label: 'River Edge', next: [8], npc: '🦆', dialogue: 'The water tastes like metal.' },
+  { id: 8, x: 20, y: 10, type: 'normal', label: 'Wild Edge', next: [] },
+];
 
 export const CHARACTERS: Record<CharacterId, Character> = {
   deer: {
@@ -9,8 +57,9 @@ export const CHARACTERS: Record<CharacterId, Character> = {
     ecosystem: 'Temperate Forest',
     description: 'A agile herbivore roaming the deep woods, sensitive to habitat changes.',
     initialHealth: 90,
-    initialPop: 5, // Thriving
-    initialBio: 5, // Optimal
+    initialPop: 5,
+    initialBio: 5,
+    path: FOREST_PATH,
     scenarios: [
       {
         round: 1,
@@ -159,6 +208,7 @@ export const CHARACTERS: Record<CharacterId, Character> = {
     initialHealth: 90,
     initialPop: 5,
     initialBio: 5,
+    path: OCEAN_PATH,
     scenarios: [
       {
         round: 1,
@@ -211,6 +261,7 @@ export const CHARACTERS: Record<CharacterId, Character> = {
     initialHealth: 90,
     initialPop: 4, // Stable/Declining
     initialBio: 4,
+    path: OCEAN_PATH, // Reuse ocean for arctic for now or define ARCTIC_PATH
     scenarios: [
       {
         round: 1,
@@ -263,6 +314,7 @@ export const CHARACTERS: Record<CharacterId, Character> = {
     initialHealth: 90,
     initialPop: 5,
     initialBio: 5,
+    path: FOREST_PATH, // Reuse forest for meadow
     scenarios: [
       {
         round: 1,
@@ -302,6 +354,112 @@ export const CHARACTERS: Record<CharacterId, Character> = {
           { text: 'Thrive in an organic community garden', impact: { health: 25, pop: 2, bio: 2 }, consequence: 'The colony grows rapidly. The gardens are full of fruit.', rippleEffect: 'Removing toxins and providing habitat leads to rapid recovery.', reflectionQuestion: 'What can you plant at home to help bees?', visual: '🌻', explanation: 'Organic gardening avoids synthetic chemicals and focuses on native plants. This provides a safe, nutrient-rich environment where bee colonies can thrive and support local food production.' },
           { text: 'Succumb to Colony Collapse Disorder', impact: { health: -50, pop: -3, bio: -2 }, consequence: 'The stressors of pollution and disease are too much.', rippleEffect: 'The loss of bees would lead to a global food crisis.', reflectionQuestion: 'What would happen to our food if bees went extinct?', visual: '🥀', explanation: 'Colony Collapse Disorder (CCD) is a phenomenon where the majority of worker bees disappear. It is likely caused by a combination of pesticides, habitat loss, and pathogens.' },
           { text: 'Compete with a new invasive bee species', impact: { health: -10, pop: -1, bio: -1 }, consequence: 'Resources are scarce as you fight for the same flowers.', rippleEffect: 'Introduced species can outcompete native ones for survival.', reflectionQuestion: 'Why is it better to have native species?', visual: '🐝', explanation: 'Invasive species can outcompete native bees for nectar and nesting sites. This can reduce the overall biodiversity of the area and disrupt the relationships between native plants and their pollinators.' }
+        ]
+      }
+    ]
+  },
+  fox: {
+    id: 'fox',
+    name: 'Fox',
+    icon: '🦊',
+    ecosystem: 'Urban Edge',
+    description: 'A clever survivor navigating the concrete jungle and green pockets.',
+    initialHealth: 85,
+    initialPop: 4,
+    initialBio: 3,
+    path: URBAN_PATH,
+    scenarios: [
+      {
+        round: 1,
+        title: 'The City Park',
+        narrative: 'The park is small but full of life. You find a discarded sandwich.',
+        choices: [
+          { text: 'Eat the sandwich', impact: { health: -5, pop: 0, bio: 0 }, consequence: 'It is salty and strange, but you are full.', rippleEffect: 'Human food habituation begins.', reflectionQuestion: 'Why is human food bad for foxes?', visual: '🥪', explanation: 'Human food is processed and lacks the nutrients wild animals need. It can lead to health issues and dangerous habituation.' },
+          { text: 'Hunt for mice in the tall grass', impact: { health: 10, pop: 0, bio: 1 }, consequence: 'A natural meal! You feel energized.', rippleEffect: 'Pest control services provided to the city.', reflectionQuestion: 'How do foxes help cities?', visual: '🐭', explanation: 'Foxes are natural predators of rodents. By hunting in urban areas, they help control pest populations naturally.' },
+          { text: 'Hide under a park bench', impact: { health: 0, pop: 0, bio: 0 }, consequence: 'You stay safe from the noisy dogs.', rippleEffect: 'Stress levels remain low.', reflectionQuestion: 'What are the stressors for urban wildlife?', visual: '🪑', explanation: 'Urban environments are full of noise and activity. Finding safe hiding spots is essential for the mental and physical health of city-dwelling animals.' }
+        ]
+      },
+      {
+        round: 2,
+        title: 'The Busy Street',
+        narrative: 'A new road has been built through your territory. Bright lights and loud noises are everywhere.',
+        choices: [
+          { text: 'Cross at night when it is quiet', impact: { health: -10, pop: -1, bio: 0 }, consequence: 'You make it, but it was close.', rippleEffect: 'Roads fragment urban habitats.', reflectionQuestion: 'How do roads affect animal movement?', visual: '🛣️', explanation: 'Roads are major barriers for wildlife. Nocturnal movement is a common adaptation, but it still carries high risks of vehicle collisions.' },
+          { text: 'Use a drainage pipe to go under', impact: { health: 5, pop: 0, bio: 0 }, consequence: 'A safe passage! You find a shortcut.', rippleEffect: 'Infrastructure can sometimes provide safe corridors.', reflectionQuestion: 'Can we design cities for animals?', visual: 'pipe', explanation: 'Culverts and pipes can act as accidental wildlife corridors, allowing animals to bypass dangerous roads safely.' },
+          { text: 'Scavenge near the highway', impact: { health: -20, pop: -1, bio: 0 }, consequence: 'The air is thick with smog. You feel weak.', rippleEffect: 'Pollution affects urban wildlife health.', reflectionQuestion: 'What is the impact of air pollution on animals?', visual: '🚗', explanation: 'Urban animals breathe the same polluted air as humans. High levels of exhaust can lead to respiratory issues and reduced lifespan.' }
+        ]
+      },
+      {
+        round: 3,
+        title: 'The Garden Feast',
+        narrative: 'A human has left out a bowl of cat food in their garden.',
+        choices: [
+          { text: 'Eat the cat food regularly', impact: { health: -15, pop: 0, bio: -1 }, consequence: 'You become dependent on humans.', rippleEffect: 'Loss of natural hunting skills.', reflectionQuestion: 'What happens when animals lose their fear of humans?', visual: '🥣', explanation: 'Habituation leads to dangerous encounters. Animals that lose their fear are more likely to be involved in conflicts or accidents.' },
+          { text: 'Ignore it and find wild berries', impact: { health: 5, pop: 0, bio: 1 }, consequence: 'You stay wild and healthy.', rippleEffect: 'Maintaining natural ecological roles.', reflectionQuestion: 'Why is a wild diet better?', visual: '🫐', explanation: 'Wild diets provide the correct balance of nutrients and keep animals engaged in their natural ecological behaviors.' },
+          { text: 'Dig in the compost bin', impact: { health: -5, pop: 0, bio: 0 }, consequence: 'You find some scraps, but also some plastic.', rippleEffect: 'Ingestion of non-food items.', reflectionQuestion: 'What are the dangers of urban waste?', visual: '♻️', explanation: 'Compost bins can be a source of food, but they often contain harmful items like plastic or toxic scraps that can harm animals.' }
+        ]
+      },
+      {
+        round: 4,
+        title: 'The Urban Sanctuary',
+        narrative: 'The city is building a "Green Belt" to connect the park to the forest.',
+        choices: [
+          { text: 'Move to the new green corridor', impact: { health: 20, pop: 1, bio: 2 }, consequence: 'You find a safe path to the wild.', rippleEffect: 'Connected habitats allow for genetic exchange.', reflectionQuestion: 'Why are green belts important?', visual: '🌳', explanation: 'Green belts provide continuous habitat, allowing animals to move freely and safely between different areas, which is vital for long-term population health.' },
+          { text: 'Get trapped in a backyard', impact: { health: -30, pop: -1, bio: 0 }, consequence: 'The fence is too high. You are stuck.', rippleEffect: 'Urban barriers trap and isolate individuals.', reflectionQuestion: 'How do fences affect wildlife?', visual: '🚧', explanation: 'Fences and walls fragment urban spaces, trapping animals in small areas where they may lack resources or face dangers.' },
+          { text: 'Avoid the new construction', impact: { health: -5, pop: 0, bio: 0 }, consequence: 'The noise is scary, but you stay safe.', rippleEffect: 'Construction noise causes temporary displacement.', reflectionQuestion: 'How does noise impact animal behavior?', visual: '🏗️', explanation: 'Construction noise can disorient animals and force them to leave their territories, leading to stress and potential conflict with other animals.' }
+        ]
+      }
+    ]
+  },
+  camel: {
+    id: 'camel',
+    name: 'Camel',
+    icon: '🐪',
+    ecosystem: 'Arid Desert',
+    description: 'A resilient traveler of the sands, adapted for extreme heat and water scarcity.',
+    initialHealth: 95,
+    initialPop: 5,
+    initialBio: 4,
+    path: DESERT_PATH,
+    scenarios: [
+      {
+        round: 1,
+        title: 'The Hidden Oasis',
+        narrative: 'The sun is scorching. You find a small patch of green in the vast dunes.',
+        choices: [
+          { text: 'Drink deeply from the oasis', impact: { health: 10, pop: 0, bio: 0 }, consequence: 'You store water for the long journey.', rippleEffect: 'Oases are vital life-support systems.', reflectionQuestion: 'How do camels store water?', visual: '🌴', explanation: 'Camels don\'t store water in their humps; they store fat. However, they can drink up to 40 gallons at once, which is stored in their bloodstream to help them survive for weeks without drinking.' },
+          { text: 'Eat the thorny acacia leaves', impact: { health: 5, pop: 0, bio: 0 }, consequence: 'Tough food for a tough animal.', rippleEffect: 'Pruning helps desert plants grow.', reflectionQuestion: 'How can camels eat thorns?', visual: '🌵', explanation: 'Camels have thick, leathery lips and mouths that allow them to eat thorny plants that other animals cannot, giving them a unique advantage in the desert.' },
+          { text: 'Rest in the shade of a rock', impact: { health: 0, pop: 0, bio: 0 }, consequence: 'You avoid the midday heat.', rippleEffect: 'Energy conservation is key to desert survival.', reflectionQuestion: 'Why is shade important in the desert?', visual: '🪨', explanation: 'In extreme heat, avoiding direct sunlight is essential to prevent overheating and dehydration. Many desert animals are active only during the cooler parts of the day.' }
+        ]
+      },
+      {
+        round: 2,
+        title: 'The Dust Storm',
+        narrative: 'The wind picks up, and the sky turns orange. A massive sandstorm is approaching.',
+        choices: [
+          { text: 'Close your nostrils and wait it out', impact: { health: -5, pop: 0, bio: 0 }, consequence: 'You are buried in sand, but you can breathe.', rippleEffect: 'Adaptations allow survival in extreme weather.', reflectionQuestion: 'What are a camel\'s adaptations for sand?', visual: '💨', explanation: 'Camels can close their nostrils completely and have three eyelids to protect their eyes from blowing sand, allowing them to survive even the most intense dust storms.' },
+          { text: 'Try to outrun the storm', impact: { health: -20, pop: -1, bio: 0 }, consequence: 'You get lost in the blinding sand.', rippleEffect: 'Panic in extreme weather leads to mortality.', reflectionQuestion: 'Why is it dangerous to move during a storm?', visual: '🏃', explanation: 'Visibility in a sandstorm is near zero. Moving increases the risk of getting lost, falling, or becoming separated from the herd.' },
+          { text: 'Seek shelter in a canyon', impact: { health: 5, pop: 0, bio: 0 }, consequence: 'The walls protect you from the wind.', rippleEffect: 'Geological features provide vital refugia.', reflectionQuestion: 'How do canyons help desert life?', visual: '⛰️', explanation: 'Canyons provide both shade and protection from the wind, making them essential refuges for many desert species during extreme weather events.' }
+        ]
+      },
+      {
+        round: 3,
+        title: 'The Shrinking Water',
+        narrative: 'The water hole you usually visit has dried up due to a prolonged drought.',
+        choices: [
+          { text: 'Dig deep into the dry bed', impact: { health: -10, pop: 0, bio: 1 }, consequence: 'You find a little moisture for yourself and others.', rippleEffect: 'Camels can act as "well-diggers" for the ecosystem.', reflectionQuestion: 'How do animals find water underground?', visual: '⛏️', explanation: 'Some desert animals can sense water underground and dig wells. These wells often provide water for many other species, making the diggers essential for ecosystem survival.' },
+          { text: 'Travel to a distant nomad camp', impact: { health: -15, pop: -1, bio: -1 }, consequence: 'You find water, but the camp is overcrowded.', rippleEffect: 'Competition at limited resources increases.', reflectionQuestion: 'What happens when water sources disappear?', visual: '⛺', explanation: 'Drought forces animals and humans to share the few remaining water sources, leading to increased competition, stress, and potential disease transmission.' },
+          { text: 'Eat succulent cacti for moisture', impact: { health: -5, pop: 0, bio: 0 }, consequence: 'You get water, but the thorns hurt.', rippleEffect: 'Cacti are vital moisture reservoirs.', reflectionQuestion: 'How do plants store water in the desert?', visual: '🌵', explanation: 'Succulent plants store water in their thick stems or leaves. They are essential "water tanks" for desert wildlife during dry periods.' }
+        ]
+      },
+      {
+        round: 4,
+        title: 'The Desert Bloom',
+        narrative: 'Rare rain has fallen, and the desert is suddenly covered in flowers.',
+        choices: [
+          { text: 'Feast on the new growth', impact: { health: 25, pop: 2, bio: 2 }, consequence: 'The desert is alive! You gain strength quickly.', rippleEffect: 'Rapid reproduction during "superblooms".', reflectionQuestion: 'What is a desert superbloom?', visual: '🌼', explanation: 'A superbloom occurs when unusual rainfall triggers the germination of millions of dormant seeds, creating a brief but intense period of high productivity and biodiversity.' },
+          { text: 'Avoid the new human tourists', impact: { health: -5, pop: 0, bio: 0 }, consequence: 'The bloom attracts many people who disturb the peace.', rippleEffect: 'Tourism can impact fragile desert ecosystems.', reflectionQuestion: 'How does tourism affect the desert?', visual: '📸', explanation: 'While beautiful, superblooms attract many tourists who can accidentally trample fragile plants and disturb wildlife, highlighting the need for responsible nature viewing.' },
+          { text: 'Store energy for the next dry spell', impact: { health: 10, pop: 1, bio: 1 }, consequence: 'You prepare for the inevitable return of the heat.', rippleEffect: 'Long-term survival strategies are essential.', reflectionQuestion: 'How do animals prepare for drought?', visual: '🔋', explanation: 'During periods of plenty, desert animals must eat as much as possible to build up fat reserves (like in a camel\'s hump) to survive the next inevitable period of scarcity.' }
         ]
       }
     ]
